@@ -1,20 +1,13 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/movie_booking?useSSL=false
+    url: jdbc:mysql://localhost:3306/movie_master?useSSL=false
     driverClassName: com.mysql.cj.jdbc.Driver
     username: root
     password: root
   jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect
-  rabbitmq:
-    listener:
-      simple:
-        retry:
-          enabled: true
-          initial-interval: 1s
-          max-attempts: 5
-          max-interval: 5s
-          multiplier: 2
+  kafka:
+    bootstrap-servers: localhost:20010
 
 server:
   port: 8083
@@ -32,14 +25,11 @@ logging:
     org.example.movie.master: INFO
     org.springframework.web: TRACE
 
-message:
-  messageConfiguration:
-    host: localhost
-    port: 20004
-    username: guest
-    password: guest
-    virtualHost: snk-rmq
-  movieDetailsExchangeConfiguration:
-    exchange: movieScheduleExchange
-    routingKey: movie.details
-    queue: movieDetailsQueue
+kafka:
+  movieBookingApi:
+    groupName: movie-schedule
+    movieDetails:
+      topic:
+        request: movie-details-request
+        response: movie-details-response
+        serialization-class: org.example.movie.core.common.schedule.MovieDetailsListRequest

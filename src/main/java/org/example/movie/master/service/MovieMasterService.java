@@ -3,10 +3,13 @@ package org.example.movie.master.service;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.example.movie.master.dto.mq.MovieDetailsRequest;
-import org.example.movie.master.dto.mq.MovieDetailsResponse;
+import org.example.movie.core.common.schedule.MovieDetails;
+import org.example.movie.core.common.schedule.MovieDetailsListRequest;
 import org.example.movie.master.repository.MovieMasterRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @Slf4j
@@ -16,12 +19,13 @@ public class MovieMasterService {
 
   private final MovieMasterRepository movieMasterRepository;
 
-  public MovieDetailsResponse fetchMovieDetails(MovieDetailsRequest movieDetailsRequest) {
-    return movieMasterRepository
-        .findByMovieUniqueKey(movieDetailsRequest.getMovieUniqueId())
-        .map(
+  public List<MovieDetails> fetchMovieDetails(MovieDetailsListRequest movieDetailsRequest) {
+    return
+            movieMasterRepository.findAllByMovieUniqueKeyIn(movieDetailsRequest.getMovieUniqueIdList())
+            .stream()
+            .map(
             movieMaster ->
-                MovieDetailsResponse.of()
+                MovieDetails.of()
                     .setMovieName(movieMaster.getMovieName())
                     .setMovieRunTime(movieMaster.getMovieRunTime())
                     .setMovieUniqueKey(movieMaster.getMovieUniqueKey())
@@ -29,6 +33,6 @@ public class MovieMasterService {
                     .setMovieCertificationType(movieMaster.getMovieCertificationType())
                     .setLanguage(movieMaster.getLanguage())
                     .setMovieReleaseDate(movieMaster.getMovieReleaseDate()))
-        .orElseGet(MovieDetailsResponse::of);
+            .collect(Collectors.toList());
   }
 }

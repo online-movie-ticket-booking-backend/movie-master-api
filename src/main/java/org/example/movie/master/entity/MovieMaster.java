@@ -12,7 +12,7 @@ import javax.persistence.Table;
 
 @Data
 @Entity
-@Table(name = "movie_master", schema = "movie_booking", catalog = "")
+@Table(name = "movie_master", schema = "movie_master", catalog = "")
 public class MovieMaster {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Id
